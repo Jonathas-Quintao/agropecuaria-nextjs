@@ -1,10 +1,10 @@
 'use client';
 
 import React from "react";
-import { UserOutlined, EditOutlined, DeleteOutlined, ShopOutlined, ProductOutlined, DollarOutlined, RocketOutlined } from "@ant-design/icons";
+import { UserOutlined, EditOutlined, DeleteOutlined, ShopOutlined, ProductOutlined, DollarOutlined, RocketOutlined, BookOutlined } from "@ant-design/icons";
 import { Layout, Menu, Breadcrumb, theme, Button, Table } from "antd";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -19,6 +19,7 @@ interface DataType {
 
 const App: React.FC = () => {
   const pathname = usePathname();
+  const router = useRouter();
 
   const dataSource: DataType[] = [
     {
@@ -80,12 +81,12 @@ const App: React.FC = () => {
     {
       key: "/produto",
       icon: <ProductOutlined />,
-      label: <Link href="/produto">Estoque</Link>,
+      label: <Link href="/produtos">Estoque</Link>,
     },
     {
       key: "/clientes",
       icon: <UserOutlined />,
-      label: <Link href="/clientes">Clientes</Link>,
+      label: <Link href="/clientes">Clientes</Link>,  
     },
     {
       key: "/fornecedores",
@@ -95,7 +96,7 @@ const App: React.FC = () => {
     {
       key: "/compras",
       icon: <ShopOutlined />,
-      label: <Link href="/compras">Compras</Link>,
+      label: <Link href="/compras">Vendas</Link>,
     },
     {
       key: "/dividas",
@@ -113,6 +114,9 @@ const App: React.FC = () => {
     "/compras": "Compras",
     "/dividas": "Dívidas",
   };
+  const handlePage = (path: string) => {
+    router.push(path);
+  }
 
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -142,6 +146,7 @@ const App: React.FC = () => {
           </Sider>
           <Content style={{ padding: "0 24px", minHeight: 280 }}>
             <Table dataSource={dataSource} columns={columns} />
+            <Button type="primary" icon={<BookOutlined />} style={{ marginRight: 8 }} onClick={() => handlePage("/cadastro/funcionarios")}/>
           </Content>
         </Layout>
       </Content>
