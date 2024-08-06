@@ -1,95 +1,155 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client';
 
-export default function Home() {
-  return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+import React from "react";
+import { UserOutlined, EditOutlined, DeleteOutlined, ShopOutlined, ProductOutlined, DollarOutlined, RocketOutlined } from "@ant-design/icons";
+import { Layout, Menu, Breadcrumb, theme, Button, Table } from "antd";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+const { Header, Content, Footer, Sider } = Layout;
 
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  );
+// Definindo a estrutura dos dados para o TypeScript
+interface DataType {
+  key: string;
+  nome: string;
+  cpf: string;
+  email: string;
+  telefone: string;
 }
+
+const App: React.FC = () => {
+  const pathname = usePathname();
+
+  const dataSource: DataType[] = [
+    {
+      key: '1',
+      nome: 'João Silva',
+      cpf: '123.456.789-00',
+      email: 'joao.silva@example.com',
+      telefone: '(11) 91234-5678',
+    },
+    {
+      key: '2',
+      nome: 'Maria Oliveira',
+      cpf: '987.654.321-00',
+      email: 'maria.oliveira@example.com',
+      telefone: '(21) 99876-5432',
+    },
+    // Adicione mais dados aqui
+  ];
+
+  const columns = [
+    {
+      title: 'NOME',
+      dataIndex: 'nome',
+      key: 'nome',
+    },
+    {
+      title: 'CPF',
+      dataIndex: 'cpf',
+      key: 'cpf',
+    },
+    {
+      title: 'EMAIL',
+      dataIndex: 'email',
+      key: 'email',
+    },
+    {
+      title: 'TELEFONE',
+      dataIndex: 'telefone',
+      key: 'telefone',
+    },
+    {
+      title: 'EDITAR',
+      key: 'editar',
+      render: (_text: any, _record: DataType) => (
+        <span>
+          <Button type="primary" icon={<EditOutlined />} style={{ marginRight: 8 }} />
+          <Button type="default" icon={<DeleteOutlined />} />
+        </span>
+      ),
+    },
+  ];
+
+  const items2 = [
+    {
+      key: "/",
+      icon: <UserOutlined />,
+      label: <Link href="/">Funcionários</Link>,
+    },
+    {
+      key: "/produto",
+      icon: <ProductOutlined />,
+      label: <Link href="/produto">Estoque</Link>,
+    },
+    {
+      key: "/clientes",
+      icon: <UserOutlined />,
+      label: <Link href="/clientes">Clientes</Link>,
+    },
+    {
+      key: "/fornecedores",
+      icon: <RocketOutlined />,
+      label: <Link href="/fornecedores">Fornecedores</Link>,
+    },
+    {
+      key: "/compras",
+      icon: <ShopOutlined />,
+      label: <Link href="/compras">Compras</Link>,
+    },
+    {
+      key: "/dividas",
+      icon: <DollarOutlined />,
+      label: <Link href="/dividas">Dívidas</Link>,
+    },
+  ];
+
+  // Mapear paths para nomes de páginas
+  const pageNames: { [key: string]: string } = {
+    "/": "Funcionários",
+    "/produto": "Estoque",
+    "/clientes": "Clientes",
+    "/fornecedores": "Fornecedores",
+    "/compras": "Compras",
+    "/dividas": "Dívidas",
+  };
+
+  const {
+    token: { colorBgContainer, borderRadiusLG },
+  } = theme.useToken();
+
+  return (
+    <Layout>
+      <Content style={{ padding: "0 48px" }}>
+        <Breadcrumb style={{ margin: "16px 0" }}>
+          <Breadcrumb.Item>{pageNames[pathname]}</Breadcrumb.Item>
+        </Breadcrumb>
+        <Layout
+          style={{
+            padding: "24px 0",
+            background: colorBgContainer,
+            borderRadius: borderRadiusLG,
+          }}
+        >
+          <Sider style={{ background: colorBgContainer }} width={200}>
+            <Menu
+              mode="inline"
+              defaultSelectedKeys={[pathname]}
+              selectedKeys={[pathname]}
+              style={{ height: "100%" }}
+              items={items2}
+            />
+          </Sider>
+          <Content style={{ padding: "0 24px", minHeight: 280 }}>
+            <Table dataSource={dataSource} columns={columns} />
+          </Content>
+        </Layout>
+      </Content>
+      <Footer style={{ textAlign: "center" }}>
+        Ant Design ©{new Date().getFullYear()} Created by Ant UED
+      </Footer>
+    </Layout>
+  );
+};
+
+export default App;
