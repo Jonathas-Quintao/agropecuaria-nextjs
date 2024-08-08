@@ -34,7 +34,6 @@ const App: React.FC = () => {
     const fetchData = async () => {
       try {
         const response = await api.get<Clientes[]>('/clientes');
-        console.log('Dados recebidos:', response.data);
         setDados(response.data);
       } catch (error) {
         console.error('Erro ao carregar dados:', error);
@@ -87,41 +86,17 @@ const App: React.FC = () => {
   ];
 
   const items2 = [
-    {
-      key: "/",
-      icon: <UserOutlined />,
-      label: <Link href="/">Funcionários</Link>,
-    },
-    {
-      key: "/produto",
-      icon: <ProductOutlined />,
-      label: <Link href="/produtos">Estoque</Link>,
-    },
-    {
-      key: "/clientes",
-      icon: <UserOutlined />,
-      label: <Link href="/clientes">Clientes</Link>,
-    },
-    {
-      key: "/fornecedores",
-      icon: <RocketOutlined />,
-      label: <Link href="/fornecedores">Fornecedores</Link>,
-    },
-    {
-      key: "/compras",
-      icon: <ShopOutlined />,
-      label: <Link href="/compras">Vendas</Link>,
-    },
-    {
-      key: "/dividas",
-      icon: <DollarOutlined />,
-      label: <Link href="/dividas">Dívidas</Link>,
-    },
+    { key: "/", icon: <UserOutlined />, label: <Link href="/">Funcionários</Link> },
+    { key: "/produtos", icon: <ProductOutlined />, label: <Link href="/produtos">Estoque</Link> },
+    { key: "/clientes", icon: <UserOutlined />, label: <Link href="/clientes">Clientes</Link> },
+    { key: "/fornecedores", icon: <RocketOutlined />, label: <Link href="/fornecedores">Fornecedores</Link> },
+    { key: "/compras", icon: <ShopOutlined />, label: <Link href="/compras">Vendas</Link> },
+    { key: "/dividas", icon: <DollarOutlined />, label: <Link href="/dividas">Dívidas</Link> },
   ];
 
   const pageNames: { [key: string]: string } = {
     "/": "Funcionários",
-    "/produto": "Estoque",
+    "/produtos": "Estoque",
     "/clientes": "Clientes",
     "/fornecedores": "Fornecedores",
     "/compras": "Compras",
@@ -137,40 +112,44 @@ const App: React.FC = () => {
   } = theme.useToken();
 
   return (
-    <Layout>
-      <Content style={{ padding: "0 48px" }}>
-        <Breadcrumb style={{ margin: "16px 0" }}>
-          <Breadcrumb.Item>{pageNames[pathname]}</Breadcrumb.Item>
-        </Breadcrumb>
-        <Layout
-          style={{
-            padding: "24px 0",
-            background: colorBgContainer,
-            borderRadius: borderRadiusLG,
-          }}
-        >
-          <Sider style={{ background: colorBgContainer }} width={200}>
-            <Menu
-              mode="inline"
-              defaultSelectedKeys={[pathname]}
-              selectedKeys={[pathname]}
-              style={{ height: "100%" }}
-              items={items2}
-            />
-          </Sider>
+    <Layout style={{ minHeight: '100vh' }}>
+      <Layout style={{ flex: 1 }}>
+        <Sider style={{ background: colorBgContainer }} width={200}>
+          <Menu
+            mode="inline"
+            defaultSelectedKeys={[pathname]}
+            selectedKeys={[pathname]}
+            style={{ height: '100%', borderRight: 0 }}
+            items={items2}
+          />
+        </Sider>
+        <Layout style={{ flex: 1 }}>
           <Content style={{ padding: "0 24px", minHeight: 280 }}>
-            <Table dataSource={dados} columns={columns} />
-            <Button
-              type="primary"
-              icon={<BookOutlined />}
-              style={{ marginRight: 8 }}
-              onClick={() => handlePage("/cadastro/clientes")}
-            />
+            <Breadcrumb style={{ margin: "16px 0" }}>
+              <Breadcrumb.Item>{pageNames[pathname]}</Breadcrumb.Item>
+            </Breadcrumb>
+            <Layout
+              style={{
+                padding: "24px 0",
+                background: colorBgContainer,
+                borderRadius: borderRadiusLG,
+              }}
+            >
+              <Content style={{ padding: "0 24px", minHeight: 280 }}>
+                <Table dataSource={dados} columns={columns} />
+                <Button
+                  type="primary"
+                  icon={<BookOutlined />}
+                  style={{ marginRight: 8 }}
+                  onClick={() => handlePage("/cadastro/clientes")}
+                />
+              </Content>
+            </Layout>
           </Content>
         </Layout>
-      </Content>
+      </Layout>
       <Footer style={{ textAlign: "center" }}>
-        Ant Design ©{new Date().getFullYear()} Created by Ant UED
+        Desenvolvido por Jonathas e Samuel ©{new Date().getFullYear()}
       </Footer>
     </Layout>
   );

@@ -2,12 +2,11 @@
 
 import React from "react";
 import { UserOutlined, EditOutlined, DeleteOutlined, ShopOutlined, ProductOutlined, DollarOutlined, RocketOutlined, BookOutlined } from "@ant-design/icons";
-import { Layout, Menu, Breadcrumb, theme, Button, Table, Form, Input, FormProps, Checkbox, Cascader, Select } from "antd";
+import { Layout, Menu, Breadcrumb, theme, Button, Form, Input, Select } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const { Header, Content, Footer, Sider } = Layout;
-
 
 type Pessoa = {
   nome: string;
@@ -15,9 +14,9 @@ type Pessoa = {
   email: string;
   telefone: string;
   cidade: string;
-  estado: string;
+  uf: string;
   bairro: string;
-  rua: string;
+  logradouro: string;
   numero: string;
   complemento?: string;
 };
@@ -55,48 +54,26 @@ export const estadosBrasileiros = [
 const Clientes = () => {
   const pathname = usePathname();
 
-  const onFinish: FormProps<Pessoa>['onFinish'] = (values) => {
+  const onFinish = (values: Pessoa) => {
     console.log('Success:', values);
   };
-  const onFinishFailed: FormProps<Pessoa>['onFinishFailed'] = (errorInfo) => {
+
+  const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo);
   };
 
   const items2 = [
-    {
-      key: "/",
-      icon: <UserOutlined />,
-      label: <Link href="/">Funcionários</Link>,
-    },
-    {
-      key: "/produto",
-      icon: <ProductOutlined />,
-      label: <Link href="/produtos">Estoque</Link>,
-    },
-    {
-      key: "/clientes",
-      icon: <UserOutlined />,
-      label: <Link href="/clientes">Clientes</Link>,
-    },
-    {
-      key: "/fornecedores",
-      icon: <RocketOutlined />,
-      label: <Link href="/fornecedores">Fornecedores</Link>,
-    },
-    {
-      key: "/compras",
-      icon: <ShopOutlined />,
-      label: <Link href="/compras">Vendas</Link>,
-    },
-    {
-      key: "/dividas",
-      icon: <DollarOutlined />,
-      label: <Link href="/dividas">Dívidas</Link>,
-    },
+    { key: "/", icon: <UserOutlined />, label: <Link href="/">Funcionários</Link> },
+    { key: "/produtos", icon: <ProductOutlined />, label: <Link href="/produtos">Estoque</Link> },
+    { key: "/clientes", icon: <UserOutlined />, label: <Link href="/clientes">Clientes</Link> },
+    { key: "/fornecedores", icon: <RocketOutlined />, label: <Link href="/fornecedores">Fornecedores</Link> },
+    { key: "/compras", icon: <ShopOutlined />, label: <Link href="/compras">Vendas</Link> },
+    { key: "/dividas", icon: <DollarOutlined />, label: <Link href="/dividas">Dívidas</Link> },
   ];
+
   const pageNames: { [key: string]: string } = {
     "/": "Funcionários",
-    "/produto": "Estoque",
+    "/produtos": "Estoque",
     "/clientes": "Clientes",
     "/fornecedores": "Fornecedores",
     "/compras": "Compras",
@@ -108,28 +85,30 @@ const Clientes = () => {
   } = theme.useToken();
 
   return (
-    <Layout>
-      <Content style={{ padding: "0 48px" }}>
-        <Breadcrumb style={{ margin: "16px 0" }}>
-          <Breadcrumb.Item>Cadastro clientes</Breadcrumb.Item>
-        </Breadcrumb>
-        <Layout
-          style={{
-            padding: "24px 0",
-            background: colorBgContainer,
-            borderRadius: borderRadiusLG,
-          }}
-        >
-          <Sider style={{ background: colorBgContainer }} width={200}>
-            <Menu
-              mode="inline"
-              defaultSelectedKeys={[pathname]}
-              selectedKeys={[pathname]}
-              style={{ height: "100%" }}
-              items={items2}
-            />
-          </Sider>
+    <Layout style={{ minHeight: '100vh' }}>
+      <Layout style={{ flex: 1 }}>
+        <Sider style={{ background: colorBgContainer }} width={200}>
+          <Menu
+            mode="inline"
+            defaultSelectedKeys={[pathname]}
+            selectedKeys={[pathname]}
+            style={{ height: '100%', borderRight: 0 }}
+            items={items2}
+          />
+        </Sider>
+        <Layout style={{ flex: 1 }}>
           <Content style={{ padding: "0 24px", minHeight: "80vh" }}>
+            <Breadcrumb style={{ margin: "16px 0" }}>
+              <Breadcrumb.Item>Cadastro de Clientes</Breadcrumb.Item>
+            </Breadcrumb>
+            <Layout
+              style={{
+                padding: "24px 0",
+                background: colorBgContainer,
+                borderRadius: borderRadiusLG,
+              }}
+            >
+              <Content style={{ padding: "0 24px", minHeight: "80vh" }}>
           <Form
     name="basic"
     labelCol={{ span: 8 }}
@@ -176,7 +155,7 @@ const Clientes = () => {
       <Input />
     </Form.Item>
     
-    <Form.Item<Pessoa> label="Estado" name="estado" rules={[{required: true, message: 'o estado não é válido'}]}>
+    <Form.Item<Pessoa> label="Estado" name="uf" rules={[{required: true, message: 'o estado não é válido'}]}>
     <Select placeholder="Selecione um estado" style={{ width: 200 }}>
     {estadosBrasileiros.map((estado) => (
       <Select.Option key={estado.sigla} value={estado.sigla}>
@@ -194,7 +173,7 @@ const Clientes = () => {
     </Form.Item>
     <Form.Item<Pessoa>
       label="Rua"
-      name="rua"
+      name="logradouro"
       rules={[{ required: true, message: 'a rua não é válido' }]}
     >
       <Input />
@@ -224,10 +203,12 @@ const Clientes = () => {
   </Form>
             
           </Content>
+            </Layout>
+          </Content>
         </Layout>
-      </Content>
+      </Layout>
       <Footer style={{ textAlign: "center" }}>
-        Ant Design ©{new Date().getFullYear()} Created by Ant UED
+        Desenvolvido por Jonathas e Samuel ©{new Date().getFullYear()}
       </Footer>
     </Layout>
   );

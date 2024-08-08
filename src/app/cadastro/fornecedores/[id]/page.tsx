@@ -30,7 +30,7 @@ import { usePathname } from "next/navigation";
 import api from "../../../../../lib/axios";
 import { estadosBrasileiros } from "../../clientes/page";
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Content, Footer, Sider } = Layout;
 
 interface Props {
   params: {
@@ -60,15 +60,6 @@ const CadastroFuncionarios: React.FC<Props> = ({params}) => {
   const pathname = usePathname();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
-
-  const onFinish: FormProps<Fornecedor>["onFinish"] = (values) => {
-    console.log("Success:", values);
-  };
-  const onFinishFailed: FormProps<Fornecedor>["onFinishFailed"] = (
-    errorInfo
-  ) => {
-    console.log("Failed:", errorInfo);
-  };
   useEffect(() => {
     if (id) {
       const fetchCliente = async () => {
@@ -84,6 +75,16 @@ const CadastroFuncionarios: React.FC<Props> = ({params}) => {
       fetchCliente();
     }
   }, [id]);
+
+  const onFinish: FormProps<Fornecedor>["onFinish"] = (values) => {
+    console.log("Success:", values);
+  };
+  const onFinishFailed: FormProps<Fornecedor>["onFinishFailed"] = (
+    errorInfo
+  ) => {
+    console.log("Failed:", errorInfo);
+  };
+  
 
   const items2 = [
     {
