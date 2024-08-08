@@ -1,52 +1,63 @@
 'use client';
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { UserOutlined, EditOutlined, DeleteOutlined, ShopOutlined, ProductOutlined, DollarOutlined, RocketOutlined, BookOutlined } from "@ant-design/icons";
 import { Layout, Menu, Breadcrumb, theme, Button, Table } from "antd";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import api from "../../../lib/axios";
 
 const { Header, Content, Footer, Sider } = Layout;
 
-// Definindo a estrutura dos dados para o TypeScript
-interface DataType {
+
+interface Fornecedor {
+  id: string;
   key: string;
-  nome: string;
+  razaoSocial: string;
   cnpj: string;
   email: string;
   telefone: string;
-  descricao: string;
+  logradouro: string;
+  numero: number;
+  complemento?: string;
+  bairro: string;
+  cidade: string;
+  uf: string;
+  cep: string;
 }
 
 const App: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
+  const [dados, setDados] = useState<Fornecedor[]>([]);
 
-  const dataSource: DataType[] = [
-    {
-      key: '1',
-      nome: 'João Silva',
-      cnpj: '123.456.789-00',
-      email: 'joao.silva@example.com',
-      telefone: '(11) 91234-5678',
-      descricao: "Vende ração"
-    },
-    {
-      key: '2',
-      nome: 'Maria Oliveira',
-      cnpj: '987.654.321-00',
-      email: 'maria.oliveira@example.com',
-      telefone: '(21) 99876-5432',
-      descricao: "Vende remédio",
-    },
-    // Adicione mais dados aqui
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        
+        const response = await api.get<Fornecedor[]>('/fornecedores');
+        
+        console.log('Dados recebidos:', response.data); 
+        setDados(response.data);
+        
+      } catch (error) {
+        console.error('Erro ao carregar dados:', error);
+      }
+    };
+
+    fetchData(); 
+  }, []);
+  const edit = (id: string | null) => {
+    router.push(`/cadastro/fornecedores/${id}`);
+  };
+
+
 
   const columns = [
     {
       title: 'RAZÃO SOCIAL',
-      dataIndex: 'nome',
-      key: 'nome',
+      dataIndex: 'razaoSocial',
+      key: 'razaoSocial',
     },
     {
       title: 'CNPJ',
@@ -71,9 +82,14 @@ const App: React.FC = () => {
     {
       title: 'EDITAR',
       key: 'editar',
-      render: (_text: any, _record: DataType) => (
+      render: (_text: any, record: Fornecedor) => (
         <span>
-          <Button type="primary" icon={<EditOutlined />} style={{ marginRight: 8 }} />
+          <Button
+            type="primary"
+            icon={<EditOutlined />}
+            style={{ marginRight: 8 }}
+            onClick={() => edit(record.id)}
+          />
           <Button type="default" icon={<DeleteOutlined />} />
         </span>
       ),
@@ -153,7 +169,7 @@ const App: React.FC = () => {
             />
           </Sider>
           <Content style={{ padding: "0 24px", minHeight: 280 }}>
-            <Table dataSource={dataSource} columns={columns} />
+            <Table dataSource={dados} columns={columns} />
             <Button type="primary" icon={<BookOutlined />} style={{ marginRight: 8 }} onClick={() => handlePage("/cadastro/fornecedores")}/>
           </Content>
         </Layout>

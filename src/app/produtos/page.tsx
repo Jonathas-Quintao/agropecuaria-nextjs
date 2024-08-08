@@ -1,67 +1,49 @@
 'use client';
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { UserOutlined, EditOutlined, DeleteOutlined, ShopOutlined, ProductOutlined, DollarOutlined, RocketOutlined, BookOutlined } from "@ant-design/icons";
 import { Layout, Menu, Breadcrumb, theme, Button, Table, } from "antd";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import api from "../../../lib/axios";
 
 const { Header, Content, Footer, Sider } = Layout;
 
-// Definindo a estrutura dos dados para o TypeScript
-interface DataType {
+
+interface Produto {
   key: string;
   nome: string;
   preco: number;
   lote: string;
   validade: Date;
-  qtd_estoque: number;
-  reposicao: number;
+  quantidadeEmEstoque: number;
+  estoque_minimo: number;
+  estoque_maximo: number;
+  valorDeReposicao: number;
 }
 
 const App: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
+  const [dados, setDados] = useState<Produto[]>([]);
 
-  const dataSource: DataType[] = [
-    {
-      key: '1',
-      nome: 'Potenay',
-      preco: 29.90,
-      lote: '1L2OPQ9',
-      validade: new Date('2022-12-31'),
-      qtd_estoque: 50,
-      reposicao: 15,
-    },
-    {
-      key: '2',
-      nome: 'Ração de cachorro',
-      preco: 29.90,
-      lote: '1L2OPQ9',
-      validade: new Date('2022-12-31'),
-      qtd_estoque: 50,
-      reposicao: 15,
-    },
-    {
-      key: '3',
-      nome: 'Ivomec',
-      preco: 29.90,
-      lote: '1L2OPQ9',
-      validade: new Date('2022-12-31'),
-      qtd_estoque: 50,
-      reposicao: 15,
-    },
-    {
-      key: '4',
-      nome: 'Milho',
-      preco: 29.90,
-      lote: '1L2OPQ9',
-      validade: new Date('2022-12-31'),
-      qtd_estoque: 50,
-      reposicao: 15,
-    },
-   
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        
+        const response = await api.get<Produto[]>('/produtos');
+        
+        console.log('Dados recebidos:', response.data); 
+        setDados(response.data);
+        
+      } catch (error) {
+        console.error('Erro ao carregar dados:', error);
+      }
+    };
+
+    fetchData(); 
+  }, []);
+  
 
   const columns = [
     {
@@ -86,20 +68,20 @@ const App: React.FC = () => {
     },
     {
       title: 'QTD ESTOQUE',
-      dataIndex: 'qtd_estoque',
-      key: 'qtd_estoque',
+      dataIndex: 'quantidadeEmEstoque',
+      key: 'quantidadeEmEstoque',
     },
     {
       title: 'VALOR DE REPOSIÇÃO',
-      dataIndex: 'reposicao',
-      key: 'reposicao',
+      dataIndex: 'valorDeReposicao',
+      key: 'valorDeReposicao',
     },
     {
       title: 'EDITAR',
       key: 'editar',
-      render: (_text: any, _record: DataType) => (
+      render: (_text: any, _record: Produto) => (
         <span>
-          <Button type="primary" icon={<EditOutlined />} style={{ marginRight: 8 }} />
+          <Button type="primary" icon={<EditOutlined />} style={{ marginRight: 8 }} onClick={() => console.log(dados)} />
           <Button type="default" icon={<DeleteOutlined />} />
         </span>
       ),
@@ -179,7 +161,7 @@ const App: React.FC = () => {
             />
           </Sider>
           <Content style={{ padding: "0 24px", minHeight: 280 }}>
-            <Table dataSource={dataSource} columns={columns} />
+            <Table dataSource={dados} columns={columns} />
             <Button type="primary" icon={<BookOutlined />} style={{ marginRight: 8 }} onClick={() => handlePage("/cadastro/produtos")}/>
           </Content>
         </Layout>

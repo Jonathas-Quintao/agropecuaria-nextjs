@@ -15,10 +15,10 @@ type Produto = {
     preco: number;
     lote: string;
     validade: Date;
-    qtd_estoque: number;
+    quantidadeEmEstoque: number;
     estoque_minimo: number;
     estoque_maximo: number;
-    reposicao: number;
+    valorDeReposicao: number;
     url_produto: string;
 };
 
@@ -143,7 +143,7 @@ const CadastroProdutos = () => {
     </Form.Item>
     <Form.Item<Produto>
       label="Quantidade em estoque"
-      name="qtd_estoque"
+      name="quantidadeEmEstoque"
       rules={[{ required: true, message: 'o valor não é válido' }]}
     >
       <Input />
@@ -165,7 +165,7 @@ const CadastroProdutos = () => {
     </Form.Item>
     <Form.Item<Produto>
       label="Reposição"
-      name="reposicao"
+      name="valorDeReposicao"
       rules={[{ required: true, message: 'o valor não é válido' }]}
     >
       <Input />

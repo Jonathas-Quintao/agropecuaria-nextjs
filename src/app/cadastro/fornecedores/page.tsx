@@ -5,7 +5,7 @@ import { UserOutlined, EditOutlined, DeleteOutlined, ShopOutlined, ProductOutlin
 import { Layout, Menu, Breadcrumb, theme, Button, Table, Form, Input, FormProps, Checkbox, Cascader, Select } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { estadosBrasileiros } from "../clientes/page";
+import { estadosBrasileiros } from "../clientes/[id]/page";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -17,8 +17,6 @@ type Fornecedor = {
     telefone: string;
     descricao?: string;
 };
-
-
 
 const CadastroFuncionarios = () => {
   const pathname = usePathname();

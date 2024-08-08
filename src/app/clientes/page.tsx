@@ -1,43 +1,52 @@
 'use client';
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { UserOutlined, EditOutlined, DeleteOutlined, ShopOutlined, ProductOutlined, DollarOutlined, RocketOutlined, BookOutlined } from "@ant-design/icons";
 import { Layout, Menu, Breadcrumb, theme, Button, Table } from "antd";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import api from "../../../lib/axios";
 
 const { Header, Content, Footer, Sider } = Layout;
 
-// Definindo a estrutura dos dados para o TypeScript
-interface DataType {
+interface Clientes {
+  id: string;
   key: string;
   nome: string;
   cpf: string;
   email: string;
   telefone: string;
+  logradouro: string;
+  numero: number;
+  complemento?: string;
+  bairro: string;
+  cidade: string;
+  uf: string;
+  cep: string;
 }
 
 const App: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
+  const [dados, setDados] = useState<Clientes[]>([]);
 
-  const dataSource: DataType[] = [
-    {
-      key: '1',
-      nome: 'João Silva',
-      cpf: '123.456.789-00',
-      email: 'joao.silva@example.com',
-      telefone: '(11) 91234-5678',
-    },
-    {
-      key: '2',
-      nome: 'Maria Oliveira',
-      cpf: '987.654.321-00',
-      email: 'maria.oliveira@example.com',
-      telefone: '(21) 99876-5432',
-    },
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await api.get<Clientes[]>('/clientes');
+        console.log('Dados recebidos:', response.data);
+        setDados(response.data);
+      } catch (error) {
+        console.error('Erro ao carregar dados:', error);
+      }
+    };
 
-  ];
+    fetchData();
+  }, []);
+
+  const edit = (id: string | null) => {
+    router.push(`/cadastro/clientes/${id}`);
+  };
 
   const columns = [
     {
@@ -63,9 +72,14 @@ const App: React.FC = () => {
     {
       title: 'EDITAR',
       key: 'editar',
-      render: (_text: any, _record: DataType) => (
+      render: (_text: any, record: Clientes) => (
         <span>
-          <Button type="primary" icon={<EditOutlined />} style={{ marginRight: 8 }} />
+          <Button
+            type="primary"
+            icon={<EditOutlined />}
+            style={{ marginRight: 8 }}
+            onClick={() => edit(record.id)}
+          />
           <Button type="default" icon={<DeleteOutlined />} />
         </span>
       ),
@@ -105,7 +119,6 @@ const App: React.FC = () => {
     },
   ];
 
-  // Mapear paths para nomes de páginas
   const pageNames: { [key: string]: string } = {
     "/": "Funcionários",
     "/produto": "Estoque",
@@ -114,9 +127,10 @@ const App: React.FC = () => {
     "/compras": "Compras",
     "/dividas": "Dívidas",
   };
+
   const handlePage = (path: string) => {
     router.push(path);
-  }
+  };
 
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -145,8 +159,13 @@ const App: React.FC = () => {
             />
           </Sider>
           <Content style={{ padding: "0 24px", minHeight: 280 }}>
-            <Table dataSource={dataSource} columns={columns} />
-            <Button type="primary" icon={<BookOutlined />} style={{ marginRight: 8 }} onClick={() => handlePage("/cadastro/clientes")}/>
+            <Table dataSource={dados} columns={columns} />
+            <Button
+              type="primary"
+              icon={<BookOutlined />}
+              style={{ marginRight: 8 }}
+              onClick={() => handlePage("/cadastro/clientes")}
+            />
           </Content>
         </Layout>
       </Content>
