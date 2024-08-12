@@ -2,10 +2,11 @@
 
 import React from "react";
 import { UserOutlined, EditOutlined, DeleteOutlined, ShopOutlined, ProductOutlined, DollarOutlined, RocketOutlined, BookOutlined } from "@ant-design/icons";
-import { Layout, Menu, Breadcrumb, theme, Button, Table, Form, Input, FormProps, Checkbox, Cascader, Select } from "antd";
+import { Layout, Menu, Breadcrumb, theme, Button, Table, Form, Input, FormProps, Checkbox, Cascader, Select, message } from "antd";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { estadosBrasileiros } from "../clientes/page";
+import api from "../../../../lib/axios";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -27,9 +28,18 @@ type Pessoa = {
 
 const CadastroFuncionarios = () => {
   const pathname = usePathname();
+  const router = useRouter();
 
-  const onFinish: FormProps<Pessoa>['onFinish'] = (values) => {
-    console.log('Success:', values);
+  const onFinish = async (values: Pessoa) => {
+    try {
+      const response = await api.post("/funcionarios", values);
+      console.log("Response from API:", response.data);
+      message.success("Funcionário cadastrado com sucesso!");
+      router.push("/clientes");
+    } catch (error) {
+      console.error("Erro ao cadastrar cliente:", error);
+      message.error("Erro ao cadastrar cliente.");
+    }
   };
   const onFinishFailed: FormProps<Pessoa>['onFinishFailed'] = (errorInfo) => {
     console.log('Failed:', errorInfo);

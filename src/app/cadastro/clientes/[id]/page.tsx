@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { UserOutlined, EditOutlined, DeleteOutlined, ShopOutlined, ProductOutlined, DollarOutlined, RocketOutlined, BookOutlined } from "@ant-design/icons";
-import { Layout, Menu, Breadcrumb, theme, Button, Form, Input, Select } from "antd";
+import { Layout, Menu, Breadcrumb, theme, Button, Form, Input, Select, message } from "antd";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import api from "../../../../../lib/axios";
@@ -81,8 +81,16 @@ const CadastroClientes: React.FC<Props> = ({ params }) => {
     }
   }, [id]);
 
-  const onFinish = (values: Pessoa) => {
-    console.log('Success:', values);
+  const onFinish = async (values: Pessoa) => {
+    try {
+      const response = await api.post("/clientes", values);
+      console.log("Response from API:", response.data);
+      message.success("Cliente cadastrado com sucesso!");
+      router.push("/clientes");
+    } catch (error) {
+      console.error("Erro ao cadastrar cliente:", error);
+      message.error("Erro ao cadastrar cliente.");
+    }
   };
 
   const onFinishFailed = (errorInfo: any) => {

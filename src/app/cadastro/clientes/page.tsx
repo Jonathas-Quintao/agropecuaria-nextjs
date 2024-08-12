@@ -2,9 +2,11 @@
 
 import React from "react";
 import { UserOutlined, EditOutlined, DeleteOutlined, ShopOutlined, ProductOutlined, DollarOutlined, RocketOutlined, BookOutlined } from "@ant-design/icons";
-import { Layout, Menu, Breadcrumb, theme, Button, Form, Input, Select } from "antd";
+import { Layout, Menu, Breadcrumb, theme, Button, Form, Input, Select, message } from "antd";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import api from "../../../../lib/axios";
+
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -53,9 +55,19 @@ export const estadosBrasileiros = [
 
 const Clientes = () => {
   const pathname = usePathname();
+  const router = useRouter();
 
-  const onFinish = (values: Pessoa) => {
-    console.log('Success:', values);
+  const onFinish = async (values: Pessoa) => {
+    try {
+      
+      const response = await api.post("/clientes", values);
+      console.log("Response from API:", response.data);
+      message.success("Cliente cadastrado com sucesso!");
+      router.push("/clientes");
+    } catch (error) {
+      console.error("Erro ao cadastrar cliente:", error);
+      message.error("Erro ao cadastrar cliente.");
+    }
   };
 
   const onFinishFailed = (errorInfo: any) => {

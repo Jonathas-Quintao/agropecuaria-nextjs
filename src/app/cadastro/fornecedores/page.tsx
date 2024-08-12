@@ -2,10 +2,11 @@
 
 import React from "react";
 import { UserOutlined, EditOutlined, DeleteOutlined, ShopOutlined, ProductOutlined, DollarOutlined, RocketOutlined, BookOutlined } from "@ant-design/icons";
-import { Layout, Menu, Breadcrumb, theme, Button, Table, Form, Input, FormProps, Checkbox, Cascader, Select } from "antd";
+import { Layout, Menu, Breadcrumb, theme, Button, Table, Form, Input, FormProps, Checkbox, Cascader, Select, message } from "antd";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { estadosBrasileiros } from "../clientes/[id]/page";
+import api from "../../../../lib/axios";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -29,9 +30,18 @@ type Fornecedor = {
 
 const CadastroFuncionarios = () => {
   const pathname = usePathname();
+  const router = useRouter();
 
-  const onFinish: FormProps<Fornecedor>['onFinish'] = (values) => {
-    console.log('Success:', values);
+  const onFinish = async (values: Fornecedor) => {
+    try {
+      const response = await api.post("/fornecedores", values);
+      console.log("Response from API:", response.data);
+      message.success("Fornecedor cadastrado com sucesso!");
+      router.push("/clientes");
+    } catch (error) {
+      console.error("Erro ao cadastrar cliente:", error);
+      message.error("Erro ao cadastrar cliente.");
+    }
   };
   const onFinishFailed: FormProps<Fornecedor>['onFinishFailed'] = (errorInfo) => {
     console.log('Failed:', errorInfo);
