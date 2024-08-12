@@ -35,7 +35,7 @@ const CadastroFuncionarios = () => {
       const response = await api.post("/funcionarios", values);
       console.log("Response from API:", response.data);
       message.success("Funcionário cadastrado com sucesso!");
-      router.push("/clientes");
+      router.push("/");
     } catch (error) {
       console.error("Erro ao cadastrar cliente:", error);
       message.error("Erro ao cadastrar cliente.");
