@@ -1,95 +1,99 @@
 'use client';
 
 import React, { useEffect, useState } from "react";
-import { UserOutlined, EditOutlined, DeleteOutlined, ShopOutlined, ProductOutlined, DollarOutlined, RocketOutlined, BookOutlined } from "@ant-design/icons";
+import { UserOutlined, EditOutlined, DeleteOutlined, ShopOutlined, ProductOutlined, DollarOutlined, RocketOutlined, BookOutlined, PlusCircleOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { Layout, Menu, Breadcrumb, theme, Button, Table, message } from "antd";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import api from "../../lib/axios";
+import api from "../../../lib/axios";
 import axios from "axios";
 
 const { Header, Content, Footer, Sider } = Layout;
 
-interface Funcionario {
-  id: string;
-  key: string;
+interface Produto {
+  id: number;
   nome: string;
-  cpf: string;
-  email: string;
-  telefone: string;
-  logradouro: string;
-  numero: number;
-  complemento?: string;
-  bairro: string;
-  cidade: string;
-  uf: string;
-  cep: string;
+  preco: number;
+}
+
+interface VendaDTO {
+  id: number;
+  clienteId: number;
+  nomeCliente: string;
+  formaDePagamento: string;
+  produtos: Produto[];
 }
 
 const App: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const [dados, setDados] = useState<Funcionario[]>([]);
+  const [dados, setDados] = useState<VendaDTO[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await api.get<Funcionario[]>('/funcionarios');
+        const response = await api.get<VendaDTO[]>('/vendas');
         setDados(response.data);
       } catch (error) {
         console.error('Erro ao carregar dados:', error);
       }
     };
 
-    fetchData(); 
+    fetchData();
   }, []);
 
-  const edit = (id: string | null) => {
-    router.push(`/cadastro/funcionarios/${id}`);
+  const edit = (id: number) => {
+    router.push(`/cadastro/vendas/${id}`);
   };
-
-  const deleteFuncionario = async (id: string) => {
+  
+  const deleteVenda = async (id: number) => {
     try {
-      await api.delete(`/funcionarios/${id}`);
-      message.success("Funcionário deletado com sucesso!");
+      await api.delete(`/vendas/${id}`);
+      message.success("Venda deletada com sucesso!");
 
-      setDados(prevDados => prevDados.filter(func => func.id !== id));
+      setDados(prevDados => prevDados.filter(venda => venda.id !== id));
     } catch (error) {
       if(axios.isAxiosError(error)){
         if (error.response?.status === 500) {
-          message.error("Erro ao deletar funcionário. Funcionário possui vendas associadas.");
+          message.error("Erro ao deletar venda. Venda possui registros associados.");
         }
       }
-      console.error('Erro ao deletar funcionário:', error);
-      message.error("Erro ao deletar funcionário.");
+      console.error('Erro ao deletar venda:', error);
+      message.error("Erro ao deletar venda.");
     }
   };
 
   const columns = [
     {
-      title: 'NOME',
-      dataIndex: 'nome',
-      key: 'nome',
+      title: 'ID',
+      dataIndex: 'id',
+      key: 'id',
     },
     {
-      title: 'CPF',
-      dataIndex: 'cpf',
-      key: 'cpf',
+      title: 'Cliente',
+      dataIndex: 'nomeCliente',
+      key: 'nomeCliente',
     },
     {
-      title: 'EMAIL',
-      dataIndex: 'email',
-      key: 'email',
+      title: 'Forma de Pagamento',
+      dataIndex: 'formaDePagamento',
+      key: 'formaDePagamento',
     },
     {
-      title: 'TELEFONE',
-      dataIndex: 'telefone',
-      key: 'telefone',
+      title: 'Produtos',
+      key: 'produtos',
+      render: (_text: any, record: VendaDTO) => (
+        <ul>
+          {record.produtos.map((produto) => (
+            <li key={produto.id}>{produto.nome} - R$ {produto.preco.toFixed(2)}</li>
+          ))}
+        </ul>
+      ),
     },
     {
       title: 'EDITAR',
       key: 'editar',
-      render: (_text: any, record: Funcionario) => (
+      render: (_text: any, record: VendaDTO) => (
         <span>
           <Button
             type="primary"
@@ -97,7 +101,7 @@ const App: React.FC = () => {
             style={{ marginRight: 8 }}
             onClick={() => edit(record.id)}
           />
-          <Button type="default" icon={<DeleteOutlined />} onClick={() => deleteFuncionario(record.id)} />
+          <Button type="default" icon={<DeleteOutlined />} onClick={() => deleteVenda(record.id)} />
         </span>
       ),
     },
@@ -155,7 +159,9 @@ const App: React.FC = () => {
             >
               <Content style={{ padding: "0 24px", minHeight: 280 }}>
                 <Table dataSource={dados} columns={columns} />
-                <Button type="primary" icon={<BookOutlined />} style={{ marginRight: 8 }} onClick={() => handlePage("/cadastro/funcionarios")}/>
+                <Button type="primary" icon={<BookOutlined />} style={{ marginRight: 8 }} onClick={() => handlePage("/cadastro/vendas")}/>
+                <Button icon={<PlusCircleOutlined />} style={{ marginRight: 8 }} onClick={() => handlePage("/cadastro/comprasFornecedor")}/>
+                <Button icon={<ShoppingCartOutlined />} style={{ marginRight: 8 }} onClick={() => handlePage("/compraFornecedor")}/>
               </Content>
             </Layout>
           </Content>

@@ -1,22 +1,21 @@
 'use client';
 
 import React, { useEffect, useState } from "react";
-import { UserOutlined, EditOutlined, DeleteOutlined, ShopOutlined, ProductOutlined, DollarOutlined, RocketOutlined, BookOutlined } from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, DollarOutlined, ShopOutlined, RocketOutlined, BookOutlined, UserOutlined, ProductOutlined } from "@ant-design/icons";
 import { Layout, Menu, Breadcrumb, theme, Button, Table, message } from "antd";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import api from "../../lib/axios";
+import api from "../../../lib/axios";
 import axios from "axios";
 
 const { Header, Content, Footer, Sider } = Layout;
 
-interface Funcionario {
-  id: string;
-  key: string;
-  nome: string;
-  cpf: string;
-  email: string;
+interface CompraFornecedor {
+  id: number;
+  razaoSocial: string;
+  cnpj: string;
   telefone: string;
+  email: string;
   logradouro: string;
   numero: number;
   complemento?: string;
@@ -24,62 +23,58 @@ interface Funcionario {
   cidade: string;
   uf: string;
   cep: string;
+  descricao: string;
+  valor: number;
 }
 
 const App: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const [dados, setDados] = useState<Funcionario[]>([]);
+  const [dados, setDados] = useState<CompraFornecedor[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await api.get<Funcionario[]>('/funcionarios');
+        const response = await api.get<CompraFornecedor[]>('/compraFornecedor'); 
         setDados(response.data);
       } catch (error) {
         console.error('Erro ao carregar dados:', error);
       }
     };
 
-    fetchData(); 
+    fetchData();
   }, []);
 
-  const edit = (id: string | null) => {
-    router.push(`/cadastro/funcionarios/${id}`);
-  };
+  
 
-  const deleteFuncionario = async (id: string) => {
+  const deleteItem = async (id: number) => {
     try {
-      await api.delete(`/funcionarios/${id}`);
-      message.success("Funcionário deletado com sucesso!");
-
-      setDados(prevDados => prevDados.filter(func => func.id !== id));
+      await api.delete(`/compras-fornecedores/${id}`);
+      message.success("Registro deletado com sucesso!");
+  
+      setDados(prevDados => prevDados.filter(item => item.id !== id));
     } catch (error) {
-      if(axios.isAxiosError(error)){
+      if (axios.isAxiosError(error)) {
         if (error.response?.status === 500) {
-          message.error("Erro ao deletar funcionário. Funcionário possui vendas associadas.");
+          message.error("Erro ao deletar registro. O registro pode estar associado a outras transações.");
         }
+      } else {
+        console.error('Erro ao deletar registro:', error);
+        message.error("Erro ao deletar registro.");
       }
-      console.error('Erro ao deletar funcionário:', error);
-      message.error("Erro ao deletar funcionário.");
     }
   };
 
   const columns = [
     {
-      title: 'NOME',
-      dataIndex: 'nome',
-      key: 'nome',
+      title: 'RAZAO SOCIAL',
+      dataIndex: 'razaoSocial',
+      key: 'razaoSocial',
     },
     {
-      title: 'CPF',
-      dataIndex: 'cpf',
-      key: 'cpf',
-    },
-    {
-      title: 'EMAIL',
-      dataIndex: 'email',
-      key: 'email',
+      title: 'CNPJ',
+      dataIndex: 'cnpj',
+      key: 'cnpj',
     },
     {
       title: 'TELEFONE',
@@ -87,17 +82,22 @@ const App: React.FC = () => {
       key: 'telefone',
     },
     {
+      title: 'EMAIL',
+      dataIndex: 'email',
+      key: 'email',
+    },
+    {
+      title: 'VALOR',
+      dataIndex: 'valor',
+      key: 'valor',
+      render: (value: number) => `R$ ${value.toFixed(2)}`, // Formatação do valor monetário
+    },
+    {
       title: 'EDITAR',
       key: 'editar',
-      render: (_text: any, record: Funcionario) => (
+      render: (_text: any, record: CompraFornecedor) => (
         <span>
-          <Button
-            type="primary"
-            icon={<EditOutlined />}
-            style={{ marginRight: 8 }}
-            onClick={() => edit(record.id)}
-          />
-          <Button type="default" icon={<DeleteOutlined />} onClick={() => deleteFuncionario(record.id)} />
+          <Button type="default" icon={<DeleteOutlined />} onClick={() => deleteItem(record.id)} />
         </span>
       ),
     },
@@ -155,7 +155,7 @@ const App: React.FC = () => {
             >
               <Content style={{ padding: "0 24px", minHeight: 280 }}>
                 <Table dataSource={dados} columns={columns} />
-                <Button type="primary" icon={<BookOutlined />} style={{ marginRight: 8 }} onClick={() => handlePage("/cadastro/funcionarios")}/>
+               
               </Content>
             </Layout>
           </Content>

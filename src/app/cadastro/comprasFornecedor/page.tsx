@@ -25,18 +25,19 @@ type Fornecedor = {
   cidade: string;
   uf: string;
   cep: string;
+  valor: number;
   descricao: string;
 };
 
-const CadastroFuncionarios = () => {
+const CompraFornecedor = () => {
   const pathname = usePathname();
   const router = useRouter();
 
   const onFinish = async (values: Fornecedor) => {
     try {
-      const response = await api.post("/fornecedores", values);
+      const response = await api.post("/compraFornecedor", values);
       console.log("Response from API:", response.data);
-      message.success("Fornecedor cadastrado com sucesso!");
+      message.success("Compra cadastrada com sucesso!");
       router.push("/fornecedores");
     } catch (error) {
       console.error("Erro ao cadastrar cliente:", error);
@@ -185,6 +186,9 @@ const CadastroFuncionarios = () => {
                   <Form.Item<Fornecedor> label="Descrição" name="descricao">
                     <Input />
                   </Form.Item>
+                  <Form.Item<Fornecedor> label="Valor" name="valor" rules={[{ required: true, message: "o valor não é válido" }]}>
+                    <Input />
+                  </Form.Item>
 
                   <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
                     <Button
@@ -209,4 +213,4 @@ const CadastroFuncionarios = () => {
   );
 };
 
-export default CadastroFuncionarios;
+export default CompraFornecedor;

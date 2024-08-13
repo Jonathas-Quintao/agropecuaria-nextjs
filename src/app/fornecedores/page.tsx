@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from "react";
-import { UserOutlined, EditOutlined, DeleteOutlined, ShopOutlined, ProductOutlined, DollarOutlined, RocketOutlined, BookOutlined } from "@ant-design/icons";
+import { UserOutlined, EditOutlined, DeleteOutlined, ShopOutlined, ProductOutlined, DollarOutlined, RocketOutlined, BookOutlined, PlusCircleOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { Layout, Menu, Breadcrumb, theme, Button, Table, message } from "antd";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -112,7 +112,7 @@ const App: React.FC = () => {
     { key: "/produtos", icon: <ProductOutlined />, label: <Link href="/produtos">Estoque</Link> },
     { key: "/clientes", icon: <UserOutlined />, label: <Link href="/clientes">Clientes</Link> },
     { key: "/fornecedores", icon: <RocketOutlined />, label: <Link href="/fornecedores">Fornecedores</Link> },
-    { key: "/compras", icon: <ShopOutlined />, label: <Link href="/compras">Vendas</Link> },
+    { key: "/vendas", icon: <ShopOutlined />, label: <Link href="/vendas">Vendas</Link> },
     { key: "/dividas", icon: <DollarOutlined />, label: <Link href="/dividas">Dívidas</Link> },
   ];
 
@@ -121,7 +121,7 @@ const App: React.FC = () => {
     "/produtos": "Estoque",
     "/clientes": "Clientes",
     "/fornecedores": "Fornecedores",
-    "/compras": "Compras",
+    "/vendas": "Vendas",
     "/dividas": "Dívidas",
   };
 
@@ -160,6 +160,8 @@ const App: React.FC = () => {
               <Content style={{ padding: "0 24px", minHeight: 280 }}>
                 <Table dataSource={dados} columns={columns} />
                 <Button type="primary" icon={<BookOutlined />} style={{ marginRight: 8 }} onClick={() => handlePage("/cadastro/fornecedores")}/>
+                <Button  icon={<PlusCircleOutlined />} style={{ marginRight: 8 }} onClick={() => handlePage("/cadastro/comprasFornecedor")}/>
+                <Button  icon={<ShoppingCartOutlined />} style={{ marginRight: 8 }} onClick={() => handlePage("/compraFornecedor")}/>
               </Content>
             </Layout>
           </Content>

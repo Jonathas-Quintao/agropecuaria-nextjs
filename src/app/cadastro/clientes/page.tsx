@@ -79,7 +79,7 @@ const Clientes = () => {
     { key: "/produtos", icon: <ProductOutlined />, label: <Link href="/produtos">Estoque</Link> },
     { key: "/clientes", icon: <UserOutlined />, label: <Link href="/clientes">Clientes</Link> },
     { key: "/fornecedores", icon: <RocketOutlined />, label: <Link href="/fornecedores">Fornecedores</Link> },
-    { key: "/compras", icon: <ShopOutlined />, label: <Link href="/compras">Vendas</Link> },
+    { key: "/vendas", icon: <ShopOutlined />, label: <Link href="/vendas">Vendas</Link> },
     { key: "/dividas", icon: <DollarOutlined />, label: <Link href="/dividas">Dívidas</Link> },
   ];
 
@@ -88,7 +88,7 @@ const Clientes = () => {
     "/produtos": "Estoque",
     "/clientes": "Clientes",
     "/fornecedores": "Fornecedores",
-    "/compras": "Compras",
+    "/vendas": "Vendas",
     "/dividas": "Dívidas",
   };
 

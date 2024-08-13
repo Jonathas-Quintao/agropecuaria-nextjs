@@ -7,7 +7,7 @@ import Image from "next/image";
 import Sider from "antd/es/layout/Sider";
 import Link from "next/link";
 import { Footer } from "antd/es/layout/layout";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import api from "../../../../lib/axios";
 
 interface Props {
@@ -37,6 +37,8 @@ const ProductPage: React.FC<Props> = ({ params }) => {
   const [produto, setProduto] = useState<Produto | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [quantidade, setQuantidade] = useState<number>(1); // Estado para a quantidade selecionada
+  const router = useRouter();
 
   useEffect(() => {
     if (id) {
@@ -44,6 +46,7 @@ const ProductPage: React.FC<Props> = ({ params }) => {
         try {
           const response = await api.get<Produto>(`/produtos/${id}`);
           setProduto(response.data);
+          console.log(response.data)
         } catch (error) {
           setError("Erro ao carregar dados do produto.");
           console.error("Erro ao carregar dados do produto:", error);
@@ -56,7 +59,15 @@ const ProductPage: React.FC<Props> = ({ params }) => {
   }, [id]);
 
   const handleSelectChange: SelectProps<number>["onChange"] = (value) => {
+    setQuantidade(value); // Atualiza o estado com a quantidade selecionada
     console.log(`Quantidade selecionada: ${value}`);
+  };
+
+  const handleFinalizarCompra = () => {
+    if (id) {
+      // Redireciona para a página de finalização de compra, passando o ID e a quantidade
+      router.push(`/finalizarCompra/${id}?quantidade=${quantidade}`);
+    }
   };
 
   const items2 = [
@@ -64,9 +75,10 @@ const ProductPage: React.FC<Props> = ({ params }) => {
     { key: "/produtos", icon: <ProductOutlined />, label: <Link href="/produtos">Estoque</Link> },
     { key: "/clientes", icon: <UserOutlined />, label: <Link href="/clientes">Clientes</Link> },
     { key: "/fornecedores", icon: <RocketOutlined />, label: <Link href="/fornecedores">Fornecedores</Link> },
-    { key: "/compras", icon: <ShopOutlined />, label: <Link href="/compras">Vendas</Link> },
+    { key: "/vendas", icon: <ShopOutlined />, label: <Link href="/vendas">Vendas</Link> },
     { key: "/dividas", icon: <DollarOutlined />, label: <Link href="/dividas">Dívidas</Link> },
   ];
+
 
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -109,7 +121,7 @@ const ProductPage: React.FC<Props> = ({ params }) => {
                       <strong>Preço:</strong> {produto.preco}
                     </p>
                     <Select
-                      defaultValue={1}
+                      value={quantidade}
                       style={{ width: 120 }}
                       onChange={handleSelectChange}
                     >
@@ -119,6 +131,7 @@ const ProductPage: React.FC<Props> = ({ params }) => {
                         </Option>
                       ))}
                     </Select>
+                    <p><strong>Valor Total:</strong> R$ {produto.preco * quantidade}</p>
                   </div>
                   <div
                     style={{
@@ -127,10 +140,7 @@ const ProductPage: React.FC<Props> = ({ params }) => {
                       justifyContent: "space-between",
                     }}
                   >
-                    <Button type="primary">Adicionar ao Carrinho</Button>
-                    <Button type="default" onClick={() => console.log(produto)}>
-                      Comprar Agora
-                    </Button>
+                    <Button type="primary" onClick={handleFinalizarCompra}>Adicionar ao Carrinho</Button>
                   </div>
                 </Card>
               )}
