@@ -6,6 +6,7 @@ import { Layout, Menu, Breadcrumb, theme, Button, Table, message } from "antd";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import api from "../../lib/axios";
+import axios from "axios";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -46,7 +47,7 @@ const App: React.FC = () => {
   const edit = (id: string | null) => {
     router.push(`/cadastro/funcionarios/${id}`);
   };
-  
+
   const deleteFuncionario = async (id: string) => {
     try {
       await api.delete(`/funcionarios/${id}`);
@@ -54,6 +55,11 @@ const App: React.FC = () => {
 
       setDados(prevDados => prevDados.filter(func => func.id !== id));
     } catch (error) {
+      if(axios.isAxiosError(error)){
+        if (error.response?.status === 500) {
+          message.error("Erro ao deletar funcionário. Funcionário possui vendas associadas.");
+        }
+      }
       console.error('Erro ao deletar funcionário:', error);
       message.error("Erro ao deletar funcionário.");
     }

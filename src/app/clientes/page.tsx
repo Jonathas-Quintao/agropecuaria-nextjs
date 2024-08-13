@@ -6,6 +6,7 @@ import { Layout, Menu, Breadcrumb, theme, Button, Table, message } from "antd";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import api from "../../../lib/axios";
+import axios from "axios";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -51,11 +52,17 @@ const App: React.FC = () => {
     try {
       await api.delete(`/clientes/${id}`);
       message.success("Cliente deletado com sucesso!");
-
+  
       setDados(prevDados => prevDados.filter(func => func.id !== id));
     } catch (error) {
-      console.error('Erro ao deletar cliente:', error);
-      message.error("Erro ao deletar cliente.");
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 500) {
+          message.error("Erro ao deletar cliente. Cliente possui vendas/dividas associadas.");
+        }
+      } else {
+        console.error('Erro ao deletar cliente:', error);
+        message.error("Erro ao deletar cliente.");
+      }
     }
   };
 
