@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { UserOutlined, EditOutlined, DeleteOutlined, ShopOutlined, ProductOutlined, DollarOutlined, RocketOutlined, BookOutlined } from "@ant-design/icons";
-import { Layout, Menu, Breadcrumb, theme, Button, Table } from "antd";
+import { Layout, Menu, Breadcrumb, theme, Button, Table, message } from "antd";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import api from "../../../lib/axios";
@@ -46,6 +46,17 @@ const App: React.FC = () => {
   const edit = (id: string | null) => {
     router.push(`/cadastro/fornecedores/${id}`);
   };
+  const deleteFornecedor = async (id: string) => {
+    try {
+      await api.delete(`/fornecedores/${id}`);
+      message.success("Fornecedor deletado com sucesso!");
+
+      setDados(prevDados => prevDados.filter(func => func.id !== id));
+    } catch (error) {
+      console.error('Erro ao deletar fornecedor:', error);
+      message.error("Erro ao deletar fornecedor.");
+    }
+  };
 
   const columns = [
     {
@@ -84,7 +95,7 @@ const App: React.FC = () => {
             style={{ marginRight: 8 }}
             onClick={() => edit(record.id)}
           />
-          <Button type="default" icon={<DeleteOutlined />} />
+          <Button type="default" icon={<DeleteOutlined />} onClick={() => deleteFornecedor(record.id)}/>
         </span>
       ),
     },

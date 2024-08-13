@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { UserOutlined, EditOutlined, DeleteOutlined, ShopOutlined, ProductOutlined, DollarOutlined, RocketOutlined, BookOutlined } from "@ant-design/icons";
-import { Layout, Menu, Breadcrumb, theme, Button, Table } from "antd";
+import { Layout, Menu, Breadcrumb, theme, Button, Table, message } from "antd";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import api from "../../../lib/axios";
@@ -10,6 +10,7 @@ import api from "../../../lib/axios";
 const { Header, Content, Footer, Sider } = Layout;
 
 interface Produto {
+  id: string;
   key: string;
   nome: string;
   preco: number;
@@ -38,6 +39,18 @@ const App: React.FC = () => {
 
     fetchData();
   }, []);
+  
+  const deleteProduto = async (id: string) => {
+    try {
+      await api.delete(`/produtos/${id}`);
+      message.success("Produto deletado com sucesso!");
+
+      setDados(prevDados => prevDados.filter(func => func.id !== id));
+    } catch (error) {
+      console.error('Erro ao deletar produto:', error);
+      message.error("Erro ao deletar produto.");
+    }
+  };
 
   const columns = [
     {
@@ -73,10 +86,9 @@ const App: React.FC = () => {
     {
       title: 'EDITAR',
       key: 'editar',
-      render: (_text: any, _record: Produto) => (
+      render: (_text: any, record: Produto) => (
         <span>
-          <Button type="primary" icon={<EditOutlined />} style={{ marginRight: 8 }} onClick={() => console.log(dados)} />
-          <Button type="default" icon={<DeleteOutlined />} />
+          <Button type="default" icon={<DeleteOutlined />} onClick={() => deleteProduto(record.id)}/>
         </span>
       ),
     },

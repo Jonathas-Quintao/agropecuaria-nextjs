@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { UserOutlined, EditOutlined, DeleteOutlined, ShopOutlined, ProductOutlined, DollarOutlined, RocketOutlined, BookOutlined } from "@ant-design/icons";
-import { Layout, Menu, Breadcrumb, theme, Button, Table } from "antd";
+import { Layout, Menu, Breadcrumb, theme, Button, Table, message } from "antd";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import api from "../../lib/axios";
@@ -46,6 +46,18 @@ const App: React.FC = () => {
   const edit = (id: string | null) => {
     router.push(`/cadastro/funcionarios/${id}`);
   };
+  
+  const deleteFuncionario = async (id: string) => {
+    try {
+      await api.delete(`/funcionarios/${id}`);
+      message.success("Funcionário deletado com sucesso!");
+
+      setDados(prevDados => prevDados.filter(func => func.id !== id));
+    } catch (error) {
+      console.error('Erro ao deletar funcionário:', error);
+      message.error("Erro ao deletar funcionário.");
+    }
+  };
 
   const columns = [
     {
@@ -79,7 +91,7 @@ const App: React.FC = () => {
             style={{ marginRight: 8 }}
             onClick={() => edit(record.id)}
           />
-          <Button type="default" icon={<DeleteOutlined />} />
+          <Button type="default" icon={<DeleteOutlined />} onClick={() => deleteFuncionario(record.id)} />
         </span>
       ),
     },
