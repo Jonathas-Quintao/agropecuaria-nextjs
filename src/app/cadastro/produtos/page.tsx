@@ -193,7 +193,7 @@ const CadastroProdutos = () => {
                 </Layout>
             </Content>
             <Footer style={{ textAlign: "center" }}>
-                Ant Design ©{new Date().getFullYear()} Created by Ant UED
+                Desenvolvido por Jonathas e Samuel ©2024
             </Footer>
         </Layout>
     );

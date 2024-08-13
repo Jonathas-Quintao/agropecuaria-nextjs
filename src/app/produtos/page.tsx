@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from "react";
-import { UserOutlined, EditOutlined, DeleteOutlined, ShopOutlined, ProductOutlined, DollarOutlined, RocketOutlined, BookOutlined } from "@ant-design/icons";
+import { UserOutlined, ShoppingOutlined, DeleteOutlined, ShopOutlined, ProductOutlined, DollarOutlined, RocketOutlined, BookOutlined } from "@ant-design/icons";
 import { Layout, Menu, Breadcrumb, theme, Button, Table, message } from "antd";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -94,6 +94,7 @@ const App: React.FC = () => {
       key: 'editar',
       render: (_text: any, record: Produto) => (
         <span>
+          <Button type="primary" icon={<ShoppingOutlined />} style={{ marginRight: 8 }} onClick={() => handlePage('/produtos', record.id)}/>
           <Button type="default" icon={<DeleteOutlined />} onClick={() => deleteProduto(record.id)}/>
         </span>
       ),
@@ -118,9 +119,10 @@ const App: React.FC = () => {
     "/dividas": "Dívidas",
   };
 
-  const handlePage = (path: string) => {
-    router.push(path);
+  const handlePage = (path: string, id?: string) => {
+    router.push(id ? `${path}/${id}` : path);
   };
+  
 
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -153,13 +155,14 @@ const App: React.FC = () => {
               <Content style={{ padding: "0 24px", minHeight: 280 }}>
                 <Table dataSource={dados} columns={columns} />
                 <Button type="primary" icon={<BookOutlined />} style={{ marginRight: 8 }} onClick={() => handlePage("/cadastro/produtos")}/>
+                
               </Content>
             </Layout>
           </Content>
         </Layout>
       </Layout>
       <Footer style={{ textAlign: "center" }}>
-        Desenvolvido por Jonathas e Samuel ©{new Date().getFullYear()}
+        Desenvolvido por Jonathas e Samuel ©2024
       </Footer>
     </Layout>
   );

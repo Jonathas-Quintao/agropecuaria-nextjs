@@ -289,7 +289,7 @@ const CadastroFuncionarios: React.FC<Props> = ({ params }) => {
         </Layout>
       </Content>
       <Footer style={{ textAlign: "center" }}>
-        Ant Design ©2023 Created by Ant UED
+        Desenvolvido por Jonathas e Samuel ©2024
       </Footer>
     </Layout>
   );

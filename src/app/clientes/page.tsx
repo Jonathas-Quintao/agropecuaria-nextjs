@@ -168,7 +168,7 @@ const App: React.FC = () => {
         </Layout>
       </Layout>
       <Footer style={{ textAlign: "center" }}>
-        Desenvolvido por Jonathas e Samuel ©{new Date().getFullYear()}
+        Desenvolvido por Jonathas e Samuel ©2024
       </Footer>
     </Layout>
   );
