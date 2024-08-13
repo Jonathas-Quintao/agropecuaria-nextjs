@@ -32,11 +32,9 @@ const FinalizarCompra: React.FC<Props> = ({ params }) => {
   const [form] = Form.useForm();
   const { id } = params;
   const router = useRouter();
-  const searchParams = useSearchParams(); // Obtém os parâmetros da URL
-  
-  // Obtém a quantidade da URL
+  const searchParams = useSearchParams();
   const quantidadeParam = searchParams.get('quantidade');
-  
+
   useEffect(() => {
     if (id) {
       const fetchProduto = async () => {
@@ -62,12 +60,41 @@ const FinalizarCompra: React.FC<Props> = ({ params }) => {
     if (produto && quantidade !== null) {
       try {
         const { nomeCliente, pagamento } = values;
-        await api.post('/compras', { 
-          produtoId: produto.id, 
-          quantidade, 
-          nomeCliente, 
-          pagamento 
-        });
+
+        // Montando o DTO da venda
+        const vendaDTO = {
+          clienteId: null, // Define o ID do cliente se disponível
+          nomeCliente,
+          formaDePagamento: pagamento,
+          produtos: [
+            {
+              id: produto.id,
+              nome: produto.nome,
+              preco: produto.preco,
+              lote: produto.lote,
+              validade: produto.validade,
+              quantidade // Adicionando a quantidade ao produto
+            }
+          ]
+        };
+
+        // Enviando o POST para criar a venda
+        await api.post('/compras', vendaDTO);
+
+        if (pagamento === "credito") {
+          // Montando o DTO da dívida
+          const dividaDTO = {
+            nome: nomeCliente,
+            cpf: "", // Define o CPF se disponível
+            email: "", // Define o email se disponível
+            telefone: "", // Define o telefone se disponível
+            valor: valorTotal, // O valor total da compra
+            vencimento: "", // Define o vencimento se disponível
+          };
+
+          // Enviando o POST para criar a dívida
+          await api.post('/dividas', dividaDTO);
+        }
 
         message.success("Compra finalizada com sucesso!");
         router.push("/");
@@ -110,8 +137,8 @@ const FinalizarCompra: React.FC<Props> = ({ params }) => {
         <Sider style={{ background: colorBgContainer }} width={200}>
           <Menu
             mode="inline"
-            defaultSelectedKeys={['/finalizar-compra']}
-            selectedKeys={['/finalizar-compra']}
+            defaultSelectedKeys={['/finalizarCompra']}
+            selectedKeys={['/finalizarCompra']}
             style={{ height: '100%', borderRight: 0 }}
             items={items2}
           />
