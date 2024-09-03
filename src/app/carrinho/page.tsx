@@ -1,102 +1,77 @@
 'use client';
 
 import React, { useEffect, useState } from "react";
-import { UserOutlined, ShopOutlined, DeleteOutlined, DollarOutlined, BookOutlined, RocketOutlined, ShoppingCartOutlined, ProductOutlined } from "@ant-design/icons";
+import { UserOutlined, ShoppingOutlined, DeleteOutlined, ShopOutlined, DollarOutlined, RocketOutlined, ProductOutlined, BookOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { Layout, Menu, Breadcrumb, theme, Button, Table, message } from "antd";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import api from "../../../lib/axios";
-import axios from "axios";
 
 const { Header, Content, Footer, Sider } = Layout;
 
-interface DividaDTO {
-  id: number;
+interface CarrinhoProduto {
+  id: string;
+  key: string;
   nome: string;
-  cpf: string;
-  email: string;
-  telefone: string;
-  valor: number;
-  vencimento: string;
+  preco: number;
+  quantidade: number;
 }
 
-const App: React.FC = () => {
+const Carrinho: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const [dados, setDados] = useState<DividaDTO[]>([]);
+  const [carrinho, setCarrinho] = useState<CarrinhoProduto[]>([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await api.get<DividaDTO[]>('/dividas');
-        setDados(response.data);
-      } catch (error) {
-        console.error('Erro ao carregar dados:', error);
-      }
-    };
-
-    fetchData();
+    const storedCarrinho = localStorage.getItem('carrinho');
+    if (storedCarrinho) {
+      setCarrinho(JSON.parse(storedCarrinho));
+    } else {
+      setCarrinho([]);
+    }
   }, []);
 
-  const edit = (id: number) => {
-    router.push(`/cadastro/dividas/${id}`);
+  const deleteItem = (id: string) => {
+    const updatedCarrinho = carrinho.filter(item => item.id !== id);
+    setCarrinho(updatedCarrinho);
+    localStorage.setItem('carrinho', JSON.stringify(updatedCarrinho));
+    message.success("Item removido com sucesso!");
   };
-  
-  const deleteDivida = async (id: number) => {
-    try {
-      await api.delete(`/dividas/${id}`);
-      message.success("Dívida deletada com sucesso!");
 
-      setDados(prevDados => prevDados.filter(divida => divida.id !== id));
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 500) {
-          message.error("Erro ao deletar dívida. Dívida possui registros associados.");
-        }
-      }
-      console.error('Erro ao deletar dívida:', error);
-      message.error("Erro ao deletar dívida.");
-    }
+  const finalizarCompra = () => {
+    
+    
+    router.push('/finalizarCompraCarrinho'); 
   };
 
   const columns = [
     {
-      title: 'Nome',
+      title: 'NOME',
       dataIndex: 'nome',
       key: 'nome',
     },
     {
-      title: 'CPF',
-      dataIndex: 'cpf',
-      key: 'cpf',
+      title: 'PREÇO',
+      dataIndex: 'preco',
+      key: 'preco',
     },
     {
-      title: 'Email',
-      dataIndex: 'email',
-      key: 'email',
+      title: 'QUANTIDADE',
+      dataIndex: 'quantidade',
+      key: 'quantidade',
     },
     {
-      title: 'Telefone',
-      dataIndex: 'telefone',
-      key: 'telefone',
+      title: 'TOTAL',
+      key: 'total',
+      render: (_text: any, record: CarrinhoProduto) => (
+        <span>{(record.preco * record.quantidade).toFixed(2)}</span>
+      ),
     },
     {
-      title: 'Valor',
-      dataIndex: 'valor',
-      key: 'valor',
-      render: (valor: number) => `R$ ${valor.toFixed(2)}`,
-    },
-    {
-      title: 'Vencimento',
-      dataIndex: 'vencimento',
-      key: 'vencimento',
-    },
-    {
-      title: 'Excluir',
-      key: 'editar',
-      render: (_text: any, record: DividaDTO) => (
+      title: 'AÇÕES',
+      key: 'acoes',
+      render: (_text: any, record: CarrinhoProduto) => (
         <span>
-          <Button type="default" icon={<DeleteOutlined />} onClick={() => deleteDivida(record.id)} />
+          <Button type="default" icon={<DeleteOutlined />} onClick={() => deleteItem(record.id)}/>
         </span>
       ),
     },
@@ -109,6 +84,7 @@ const App: React.FC = () => {
     { key: "/fornecedores", icon: <RocketOutlined />, label: <Link href="/fornecedores">Fornecedores</Link> },
     { key: "/vendas", icon: <ShopOutlined />, label: <Link href="/vendas">Vendas</Link> },
     { key: "/dividas", icon: <DollarOutlined />, label: <Link href="/dividas">Dívidas</Link> },
+    { key: "/carrinho", icon: <ShoppingCartOutlined />, label: <Link href="/carrinho">Carrinho</Link> },
   ];
 
   const pageNames: { [key: string]: string } = {
@@ -118,10 +94,7 @@ const App: React.FC = () => {
     "/fornecedores": "Fornecedores",
     "/vendas": "Vendas",
     "/dividas": "Dívidas",
-  };
-
-  const handlePage = (path: string) => {
-    router.push(path);
+    "/carrinho": "Carrinho",
   };
 
   const {
@@ -153,9 +126,8 @@ const App: React.FC = () => {
               }}
             >
               <Content style={{ padding: "0 24px", minHeight: 280 }}>
-                <Table dataSource={dados} columns={columns} />
-                <Button type="primary" icon={<BookOutlined />} style={{ marginRight: 8 }} onClick={() => handlePage("/cadastro/dividas")}/>
-                <Button icon={<ShoppingCartOutlined />} style={{ marginRight: 8 }} onClick={() => handlePage("/compraFornecedor")}/>
+                <Table dataSource={carrinho} columns={columns} rowKey="id" />
+                <Button type="primary" icon={<BookOutlined />} onClick={finalizarCompra} style={{ marginTop: 16 }}>Finalizar Compra</Button>
               </Content>
             </Layout>
           </Content>
@@ -168,4 +140,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default Carrinho;

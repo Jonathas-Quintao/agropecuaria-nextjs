@@ -21,11 +21,12 @@ interface Produto {
   nome: string;
   preco: number;
   lote: string;
-  validade: string; 
+  validade: string;
   quantidadeEmEstoque: number;
   estoque_minimo: number;
   estoque_maximo: number;
   valorDeReposicao: number;
+  linkFoto: string;
 }
 
 const { Option } = Select;
@@ -46,7 +47,7 @@ const ProductPage: React.FC<Props> = ({ params }) => {
         try {
           const response = await api.get<Produto>(`/produtos/${id}`);
           setProduto(response.data);
-          console.log(response.data)
+          console.log(response.data);
         } catch (error) {
           setError("Erro ao carregar dados do produto.");
           console.error("Erro ao carregar dados do produto:", error);
@@ -59,14 +60,26 @@ const ProductPage: React.FC<Props> = ({ params }) => {
   }, [id]);
 
   const handleSelectChange: SelectProps<number>["onChange"] = (value) => {
-    setQuantidade(value); // Atualiza o estado com a quantidade selecionada
+    setQuantidade(value);
     console.log(`Quantidade selecionada: ${value}`);
   };
 
   const handleFinalizarCompra = () => {
-    if (id) {
-      // Redireciona para a página de finalização de compra, passando o ID e a quantidade
+    if (produto) {
+      const carrinho = JSON.parse(localStorage.getItem('carrinho') || '[]');
+      carrinho.push({ ...produto, quantidade });
+      localStorage.setItem('carrinho', JSON.stringify(carrinho));
+
       router.push(`/finalizarCompra/${id}?quantidade=${quantidade}`);
+    }
+  };
+
+  const handleAdicionarCarrinho = () => {
+    if (produto) {
+      // Adiciona o produto ao localStorage
+      const carrinho = JSON.parse(localStorage.getItem('carrinho') || '[]');
+      carrinho.push({ ...produto, quantidade });
+      localStorage.setItem('carrinho', JSON.stringify(carrinho));
     }
   };
 
@@ -79,13 +92,12 @@ const ProductPage: React.FC<Props> = ({ params }) => {
     { key: "/dividas", icon: <DollarOutlined />, label: <Link href="/dividas">Dívidas</Link> },
   ];
 
-
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
   if (loading) return <Spin style={{ margin: "20px auto", display: "block" }} />;
-  
+
   if (error) return <Alert message={error} type="error" showIcon style={{ margin: "20px auto", display: "block" }} />;
 
   return (
@@ -107,7 +119,7 @@ const ProductPage: React.FC<Props> = ({ params }) => {
                 <Card hoverable style={{ width: "100%" }}>
                   <Image
                     alt={produto.nome}
-                    src="https://via.placeholder.com/300"
+                    src={produto.linkFoto}
                     width={250}
                     height={250}
                     unoptimized
@@ -137,10 +149,11 @@ const ProductPage: React.FC<Props> = ({ params }) => {
                     style={{
                       marginTop: 16,
                       display: "flex",
-                      justifyContent: "space-between",
+                      gap: 16,
                     }}
                   >
-                    <Button type="primary" onClick={handleFinalizarCompra}>Adicionar ao Carrinho</Button>
+                    <Button type="primary" onClick={handleFinalizarCompra}>Finalizar Compra</Button>
+                    <Button type="default" onClick={handleAdicionarCarrinho}>Adicionar ao Carrinho</Button>
                   </div>
                 </Card>
               )}

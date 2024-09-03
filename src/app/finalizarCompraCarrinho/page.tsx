@@ -23,8 +23,8 @@ import {
   ProductOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import api from "../../../../lib/axios";
+import { useRouter } from "next/navigation";
+import api from "../../../lib/axios";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { Title } = Typography;
@@ -36,12 +36,11 @@ interface Props {
   };
 }
 
-interface Produto {
+interface CarrinhoProduto {
   id: string;
   nome: string;
   preco: number;
-  lote: string;
-  validade: string;
+  quantidade: number;
 }
 
 interface Clientes {
@@ -60,57 +59,42 @@ interface Clientes {
   cep: string;
 }
 
-interface VendaProduto {
-  id: string;
-  quantidade: number;
-}
-
 interface Venda {
   clienteId: string;
   formaDePagamento: string;
-  produtos: VendaProduto[];
+  produtos: CarrinhoProduto[];
 }
 
 const FinalizarCompra: React.FC<Props> = ({ params }) => {
-  const [produto, setProduto] = useState<Produto | null>(null);
   const [clientes, setClientes] = useState<Clientes[]>([]);
-  const [quantidade, setQuantidade] = useState<number | null>(null);
+  const [carrinho, setCarrinho] = useState<CarrinhoProduto[]>([]);
   const [loading, setLoading] = useState(true);
   const [form] = Form.useForm();
-  const { id } = params;
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const quantidadeParam = searchParams.get("quantidade");
 
   useEffect(() => {
-    if (id) {
-      const fetchProduto = async () => {
+    const fetchClientes = async () => {
         try {
-          const response = await api.get<Produto>(`/produtos/${id}`);
-          setProduto(response.data);
-          if (quantidadeParam) {
-            setQuantidade(parseInt(quantidadeParam));
-          }
+          const response = await api.get<Clientes[]>("/clientes");
+          setClientes(response.data);
         } catch (error) {
-          message.error("Erro ao carregar dados do produto.");
-          console.error("Erro ao carregar dados do produto:", error);
-        } finally {
-          setLoading(false);
+          console.error("Erro ao carregar dados:", error);
         }
       };
 
-      fetchProduto();
-    }
-    const fetchClientes = async () => {
-      try {
-        const response = await api.get<Clientes[]>("/clientes");
-        setClientes(response.data);
-      } catch (error) {
-        console.error("Erro ao carregar dados:", error);
+    const fetchCarrinho = () => {
+      const storedCarrinho = localStorage.getItem("carrinho");
+      if (storedCarrinho) {
+        setCarrinho(JSON.parse(storedCarrinho));
+      } else {
+        setCarrinho([]);
       }
     };
+
     fetchClientes();
-  }, [id, quantidadeParam]);
+    fetchCarrinho();
+    setLoading(false);
+  }, []);
 
   const cadastroDivida = async () => {
     
@@ -147,37 +131,30 @@ const FinalizarCompra: React.FC<Props> = ({ params }) => {
   };
 
   const handleFinish = async (values: any) => {
-    console.log("Form values:", values);
-    if (produto && quantidade !== null) {
-      const clienteSelecionado = clientes.find(
-        (cliente) => cliente.id === values.clienteId
-      );
-  
-      const venda: Venda = {
-        clienteId: clienteSelecionado?.id || "",
-        formaDePagamento: values.pagamento,
-        produtos: [
-          {
-            id: produto.id,
-            quantidade: quantidade,
-          },
-        ],
-      };
+    const clienteSelecionado = clientes.find(
+      (cliente) => cliente.id === values.clienteId
+    );
 
-      if(venda.formaDePagamento === "credito") {
-          cadastroDivida();
-      }
-  
-      try {
+    const venda: Venda = {
+      clienteId: clienteSelecionado?.id || "",
+      formaDePagamento: values.pagamento,
+      produtos: carrinho,
+    };
+
+    if(venda.formaDePagamento === "credito") {
+        cadastroDivida();
+    }
+
+    try {
         const response = await api.post("/vendas", venda);
         console.log("Response from API:", response.data);
         message.success("Compra finalizada com sucesso!");
+        localStorage.removeItem("carrinho");
         router.push("/vendas");
       } catch (error) {
         message.error("Erro ao finalizar a compra.");
         console.error("Erro ao finalizar a compra:", error);
       }
-    }
   };
 
   const items2 = [
@@ -226,7 +203,10 @@ const FinalizarCompra: React.FC<Props> = ({ params }) => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  const valorTotal = produto && quantidade ? produto.preco * quantidade : 0;
+  const valorTotal = carrinho.reduce(
+    (total, item) => total + item.preco * item.quantidade,
+    0
+  );
 
   if (loading)
     return (
@@ -259,25 +239,12 @@ const FinalizarCompra: React.FC<Props> = ({ params }) => {
             >
               <Content style={{ padding: "0 24px", minHeight: 280 }}>
                 <Title level={3}>Finalizar Compra</Title>
-                {produto ? (
+                {carrinho.length > 0 ? (
                   <Form
                     form={form}
                     onFinish={handleFinish}
                     layout="vertical"
-                    initialValues={{ quantidade }}
                   >
-                    <Form.Item label="Nome do Produto">
-                      <Input value={produto.nome} readOnly />
-                    </Form.Item>
-                    <Form.Item label="Preço">
-                      <Input
-                        value={`R$ ${produto.preco.toFixed(2)}`}
-                        readOnly
-                      />
-                    </Form.Item>
-                    <Form.Item label="Quantidade">
-                      <Input value={quantidade ? quantidade : "0"} readOnly />
-                    </Form.Item>
                     <Form.Item label="Valor Total">
                       <Input value={`R$ ${valorTotal.toFixed(2)}`} readOnly />
                     </Form.Item>
@@ -331,7 +298,7 @@ const FinalizarCompra: React.FC<Props> = ({ params }) => {
                     </Form.Item>
                   </Form>
                 ) : (
-                  <p>Carregando informações do produto...</p>
+                  <p>O carrinho está vazio.</p>
                 )}
               </Content>
             </Layout>

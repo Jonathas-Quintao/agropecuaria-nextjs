@@ -17,13 +17,11 @@ import {
   Breadcrumb,
   theme,
   Button,
-  Table,
   Form,
   Input,
-  FormProps,
-  Checkbox,
-  Cascader,
   Select,
+  message,
+  
 } from "antd";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -49,7 +47,7 @@ type Pessoa = {
     logradouro: string;
     numero: string;
     complemento?: string;
-  };
+};
 
 const CadastroFuncionarios: React.FC<Props> = ({ params }) => {
     const { id } = params;
@@ -62,11 +60,11 @@ const CadastroFuncionarios: React.FC<Props> = ({ params }) => {
       if (id) {
         const fetchCliente = async () => {
           try {
-            const response = await api.get<Pessoa>(`/clientes/${id}`);
+            const response = await api.get<Pessoa>(`/funcionarios/${id}`);
             form.setFieldsValue(response.data);
             setLoading(false);
           } catch (error) {
-            console.error('Erro ao carregar dados do cliente:', error);
+            console.error('Erro ao carregar dados do funcionário:', error);
             setLoading(false);
           }
         };
@@ -74,8 +72,14 @@ const CadastroFuncionarios: React.FC<Props> = ({ params }) => {
       }
     }, [id]);
   
-    const onFinish = (values: Pessoa) => {
-      console.log('Success:', values);
+    const onFinish = async (values: Pessoa) => {
+      try {
+        await api.put(`/funcionarios/${id}`, values);
+        message.success('Funcionário atualizado com sucesso');
+        router.push("/"); 
+      } catch (error) {
+        console.error('Erro ao atualizar funcionário:', error);
+      }
     };
   
     const onFinishFailed = (errorInfo: any) => {
@@ -99,7 +103,6 @@ const CadastroFuncionarios: React.FC<Props> = ({ params }) => {
       "/vendas": "Vendas",
       "/dividas": "Dívidas",
     };
-    
   
     const {
       token: { colorBgContainer, borderRadiusLG },
@@ -216,7 +219,7 @@ const CadastroFuncionarios: React.FC<Props> = ({ params }) => {
                       <Button type="primary" htmlType="submit" style={{ marginRight: 20 }}>
                         Salvar
                       </Button>
-                      <Button type="default">
+                      <Button type="default" onClick={() => router.push("/")}>
                         Cancelar
                       </Button>
                     </Form.Item>

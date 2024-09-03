@@ -23,9 +23,10 @@ import {
   Checkbox,
   Cascader,
   Select,
+  message,
 } from "antd";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import api from "../../../../../lib/axios";
 import { estadosBrasileiros } from "../../clientes/page";
 
@@ -60,6 +61,7 @@ type Fornecedor = {
 
 const CadastroFuncionarios: React.FC<Props> = ({ params }) => {
   const { id } = params;
+  const router = useRouter();
   const pathname = usePathname();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
@@ -80,8 +82,14 @@ const CadastroFuncionarios: React.FC<Props> = ({ params }) => {
     }
   }, [id]);
 
-  const onFinish: FormProps<Fornecedor>["onFinish"] = (values) => {
-    console.log("Success:", values);
+  const onFinish = async (values: Fornecedor) => {
+    try {
+      await api.put(`/fornecedores/${id}`, values);
+      message.success('Fornecedor atualizado com sucesso');
+      router.push("/fornecedores"); 
+    } catch (error) {
+      message.error('Erro ao atualizar Fornecedor:');
+    }
   };
 
   const onFinishFailed: FormProps<Fornecedor>["onFinishFailed"] = (
@@ -264,10 +272,17 @@ const CadastroFuncionarios: React.FC<Props> = ({ params }) => {
                   <Input />
                 </Form.Item>
                 <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-                  <Button type="primary" htmlType="submit">
-                    Submit
-                  </Button>
-                </Form.Item>
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      style={{ marginRight: 20 }}
+                    >
+                      Salvar
+                    </Button>
+                    <Button type="default" onClick={() => router.push("/fornecedores")}>
+                      Cancelar
+                    </Button>
+                  </Form.Item>
               </Form>
             )}
           </Content>

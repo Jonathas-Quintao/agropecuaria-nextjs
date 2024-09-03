@@ -90,7 +90,7 @@ const App: React.FC = () => {
       title: 'VALOR',
       dataIndex: 'valor',
       key: 'valor',
-      render: (value: number) => `R$ ${value.toFixed(2)}`, // Formatação do valor monetário
+      render: (value: number) => `R$ ${value.toFixed(2)}`, 
     },
     {
       title: 'EDITAR',

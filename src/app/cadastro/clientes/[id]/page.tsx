@@ -83,13 +83,11 @@ const CadastroClientes: React.FC<Props> = ({ params }) => {
 
   const onFinish = async (values: Pessoa) => {
     try {
-      const response = await api.post("/clientes", values);
-      console.log("Response from API:", response.data);
-      message.success("Cliente cadastrado com sucesso!");
-      router.push("/clientes");
+      await api.put(`/clientes/${id}`, values);
+      message.success('Cliente atualizado com sucesso');
+      router.push("/clientes"); 
     } catch (error) {
-      console.error("Erro ao cadastrar cliente:", error);
-      message.error("Erro ao cadastrar cliente.");
+      message.error('Erro ao atualizar cliente:');
     }
   };
 
@@ -224,7 +222,7 @@ const CadastroClientes: React.FC<Props> = ({ params }) => {
                     <Button type="primary" htmlType="submit" style={{ marginRight: 20 }}>
                       Salvar
                     </Button>
-                    <Button type="default">
+                    <Button type="default" onClick={() => router.push("/clientes")}>
                       Cancelar
                     </Button>
                   </Form.Item>

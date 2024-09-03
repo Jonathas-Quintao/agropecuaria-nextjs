@@ -85,7 +85,7 @@ const CompraFornecedor = () => {
         <Layout style={{ flex: 1 }}>
           <Content style={{ padding: "0 24px", minHeight: "80vh" }}>
             <Breadcrumb style={{ margin: "16px 0" }}>
-              <Breadcrumb.Item>Cadastro de Funcionários</Breadcrumb.Item>
+              <Breadcrumb.Item>Cadastro de compras de fornecedores</Breadcrumb.Item>
             </Breadcrumb>
             <Layout
               style={{
@@ -198,7 +198,9 @@ const CompraFornecedor = () => {
                     >
                       Salvar
                     </Button>
-                    <Button type="default">Cancelar</Button>
+                    <Button type="default" onClick={() => router.push("/fornecedores")}>
+                      Cancelar
+                    </Button>
                   </Form.Item>
                 </Form>
               </Content>

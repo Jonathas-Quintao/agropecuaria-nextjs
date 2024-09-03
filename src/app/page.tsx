@@ -37,12 +37,36 @@ const App: React.FC = () => {
         const response = await api.get<Funcionario[]>('/funcionarios');
         setDados(response.data);
       } catch (error) {
-        console.error('Erro ao carregar dados:', error);
+        if (axios.isAxiosError(error) && error.response?.status === 401) {
+          router.push('/login');
+        } else {
+          console.error('Erro ao carregar dados:', error);
+        }
       }
     };
-
+  
     fetchData(); 
   }, []);
+
+useEffect(() => {
+  const checkAuthentication = () => {
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
+
+    if (!token || role !== 'ADMIN') {
+      message.error('Você não tem permissão para acessar esta página.');
+      router.push('/produtos');
+    }
+  };
+
+  checkAuthentication();
+}, [router]);
+
+ 
+  const checkAuthentication = () => {
+    
+    return false;
+  };
 
   const edit = (id: string | null) => {
     router.push(`/cadastro/funcionarios/${id}`);

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from "react";
-import { UserOutlined, ShoppingOutlined, DeleteOutlined, ShopOutlined, ProductOutlined, DollarOutlined, RocketOutlined, BookOutlined } from "@ant-design/icons";
+import { UserOutlined, ShoppingOutlined, DeleteOutlined, ShopOutlined, ProductOutlined, DollarOutlined, RocketOutlined, BookOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { Layout, Menu, Breadcrumb, theme, Button, Table, message } from "antd";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -155,6 +155,7 @@ const App: React.FC = () => {
               <Content style={{ padding: "0 24px", minHeight: 280 }}>
                 <Table dataSource={dados} columns={columns} />
                 <Button type="primary" icon={<BookOutlined />} style={{ marginRight: 8 }} onClick={() => handlePage("/cadastro/produtos")}/>
+                <Button type="default" icon={<ShoppingCartOutlined />} style={{ marginRight: 8 }} onClick={() => handlePage("/carrinho")}/>
                 
               </Content>
             </Layout>

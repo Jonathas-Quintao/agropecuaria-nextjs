@@ -7,21 +7,20 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import api from "../../../lib/axios";
 import axios from "axios";
+import { title } from "process";
 
 const { Header, Content, Footer, Sider } = Layout;
 
-interface Produto {
+interface Cliente {
   id: number;
   nome: string;
-  preco: number;
 }
 
 interface VendaDTO {
   id: number;
-  clienteId: number;
-  nomeCliente: string;
+  cliente: Cliente;
   formaDePagamento: string;
-  produtos: Produto[];
+  valorTotal: number;
 }
 
 const App: React.FC = () => {
@@ -64,15 +63,12 @@ const App: React.FC = () => {
   };
 
   const columns = [
-    {
-      title: 'ID',
-      dataIndex: 'id',
-      key: 'id',
-    },
+    
     {
       title: 'Cliente',
-      dataIndex: 'nomeCliente',
-      key: 'nomeCliente',
+      dataIndex: 'cliente', 
+      key: 'cliente',
+      render: (cliente: Cliente) => cliente?.nome || 'Nome não disponível', 
     },
     {
       title: 'Forma de Pagamento',
@@ -80,27 +76,15 @@ const App: React.FC = () => {
       key: 'formaDePagamento',
     },
     {
-      title: 'Produtos',
-      key: 'produtos',
-      render: (_text: any, record: VendaDTO) => (
-        <ul>
-          {record.produtos.map((produto) => (
-            <li key={produto.id}>{produto.nome} - R$ {produto.preco.toFixed(2)}</li>
-          ))}
-        </ul>
-      ),
+      title: "Valor Total",
+      dataIndex:"valorTotal",
+      key:"valorTotal",
     },
     {
-      title: 'EDITAR',
+      title: 'Excluir',
       key: 'editar',
       render: (_text: any, record: VendaDTO) => (
         <span>
-          <Button
-            type="primary"
-            icon={<EditOutlined />}
-            style={{ marginRight: 8 }}
-            onClick={() => edit(record.id)}
-          />
           <Button type="default" icon={<DeleteOutlined />} onClick={() => deleteVenda(record.id)} />
         </span>
       ),
@@ -160,7 +144,6 @@ const App: React.FC = () => {
               <Content style={{ padding: "0 24px", minHeight: 280 }}>
                 <Table dataSource={dados} columns={columns} />
                 <Button type="primary" icon={<BookOutlined />} style={{ marginRight: 8 }} onClick={() => handlePage("/cadastro/vendas")}/>
-                <Button icon={<PlusCircleOutlined />} style={{ marginRight: 8 }} onClick={() => handlePage("/cadastro/comprasFornecedor")}/>
                 <Button icon={<ShoppingCartOutlined />} style={{ marginRight: 8 }} onClick={() => handlePage("/compraFornecedor")}/>
               </Content>
             </Layout>

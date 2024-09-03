@@ -10,24 +10,13 @@ import dayjs from "dayjs";
 
 const { Content, Footer, Sider } = Layout;
 
-type Produto = {
-    nome: string;
-    preco: number;
-    lote: string;
-    validade: string; 
-    quantidadeEmEstoque: number;
-    estoqueMinimo: number;
-    estoqueMaximo: number;
-    valorDeReposicao: number;
-};
-
 const CadastroProdutos = () => {
     const pathname = usePathname();
     const router = useRouter();
 
     const onFinish = async (values: any) => {
         try {
-            // Formata a data para o formato esperado pelo backend
+           
             const formattedValues = {
                 nome: values.nome,
                 preco: parseFloat(values.preco),
@@ -36,7 +25,8 @@ const CadastroProdutos = () => {
                 quantidadeEmEstoque: parseInt(values.quantidadeEmEstoque, 10),
                 estoqueMinimo: parseInt(values.estoqueMinimo, 10),
                 estoqueMaximo: parseInt(values.estoqueMaximo, 10),
-                valorDeReposicao: parseInt(values.valorDeReposicao, 10)
+                valorDeReposicao: parseInt(values.valorDeReposicao, 10),
+                linkFoto: values.linkFoto,
             };
 
             console.log("Form values:", formattedValues);
@@ -162,6 +152,13 @@ const CadastroProdutos = () => {
                                 label="Reposição"
                                 name="valorDeReposicao"
                                 rules={[{ required: true, message: 'O valor de reposição não é válido' }]}
+                            >
+                                <Input />
+                            </Form.Item>
+                            <Form.Item
+                                label="Link da foto"
+                                name="linkFoto"
+                                rules={[{ required: true, message: 'O link da foto não é válido' }]}
                             >
                                 <Input />
                             </Form.Item>

@@ -32,7 +32,7 @@ const CadastroFuncionarios = () => {
 
   const onFinish = async (values: Pessoa) => {
     try {
-      const response = await api.post("/funcionarios", values);
+      const response = await api.post("/funcionarios/post", values);
       console.log("Response from API:", response.data);
       message.success("Funcionário cadastrado com sucesso!");
       router.push("/");
